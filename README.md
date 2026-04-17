@@ -212,9 +212,9 @@ MIT
 ---
 
 ## ✨ Autor
-**Miriam Edith Garcia Miguel**
-**Sabina Perez Olvera**
-**Eduardo Ochoa Almaraz**
+* **Miriam Edith Garcia Miguel** 
+* **Sabina Perez Olvera**
+* **Eduardo Ochoa Almaraz**
 
 ---
 
