@@ -1,0 +1,276 @@
+📦 DataGuardMX
+│
+├── ⚙️ backend/                          # API REST (Node.js + Express)
+│   ├── 📂 src/
+│   │   ├── ⚙️ config/
+│   │   │   └── supabase.js              # Cliente de Supabase para conectar con la BD
+│   │   │
+│   │   ├── 🎮 controllers/              # Lógica de negocio (endpoints)
+│   │   │   ├── alertaController.js      # Gestión de alertas de seguridad (CRUD)
+│   │   │   ├── authController.js        # Login, registro, recuperación de contraseña
+│   │   │   ├── chatbotController.js     # Respuestas del chatbot "Guardia"
+│   │   │   ├── consentimientoController.js # CRUD de consentimientos de datos
+│   │   │   ├── exportController.js      # Generación de PDF (reportes, certificados)
+│   │   │   ├── profileController.js     # Perfil de usuario (editar, cambiar contraseña)
+│   │   │   ├── reporteController.js     # CRUD de incidentes/reportes ciudadanos
+│   │   │   ├── searchController.js      # Búsqueda en incidentes y consentimientos
+│   │   │   ├── securityController.js    # Verificación de filtraciones (HIBP/BD)
+│   │   │   ├── solicitudEmpresaController.js # Solicitudes de registro empresarial (WhatsApp)
+│   │   │   ├── userController.js        # Gestión de usuarios (admin: crear, editar, eliminar)
+│   │   │   └── webhookController.js     # Webhooks para n8n (automatizaciones)
+│   │   │
+│   │   ├── 🛡️ middleware/               # Seguridad y validaciones
+│   │   │   ├── authMiddleware.js        # Verificación de token JWT
+│   │   │   └── roleMiddleware.js        # Verificación de roles (admin/ciudadano/empresa)
+│   │   │
+│   │   ├── 🧠 models/                   # Modelos de datos (interacción con Supabase)
+│   │   │   ├── Alerta.js                # Modelo de alertas de seguridad
+│   │   │   ├── Consentimiento.js        # Modelo de consentimientos de datos
+│   │   │   ├── Empresa.js               # Modelo de empresas (dashboard empresarial)
+│   │   │   ├── Reporte.js               # Modelo de incidentes/reportes
+│   │   │   ├── SolicitudEmpresa.js      # Modelo de solicitudes de registro empresarial
+│   │   │   └── User.js                  # Modelo de usuarios (CRUD, autenticación)
+│   │   │
+│   │   ├── 🚏 routes/                   # Rutas de la API
+│   │   │   ├── alertaRoutes.js          # Endpoints: /api/alertas
+│   │   │   ├── authRoutes.js            # Endpoints: /api/auth (login, register, recuperar)
+│   │   │   ├── chatbotRoutes.js         # Endpoints: /api/chatbot
+│   │   │   ├── consentimientoRoutes.js  # Endpoints: /api/consentimientos
+│   │   │   ├── exportRoutes.js          # Endpoints: /api/export (PDF)
+│   │   │   ├── profileRoutes.js         # Endpoints: /api/profile
+│   │   │   ├── reporteRoutes.js         # Endpoints: /api/reportes
+│   │   │   ├── searchRoutes.js          # Endpoints: /api/search
+│   │   │   ├── securityRoutes.js        # Endpoints: /api/security (filtraciones)
+│   │   │   ├── userRoutes.js            # Endpoints: /api/users (admin)
+│   │   │   └── webhookRoutes.js         # Endpoints: /api/webhook (n8n)
+│   │   │
+│   │   ├── 🔧 services/                 # Servicios externos / lógica reutilizable
+│   │   │   ├── breachService.js         # Verificación de filtraciones (BD y APIs externas)
+│   │   │   ├── emailService.js          # Envío de correos (Gmail, Mailtrap)
+│   │   │   └── pdfService.js            # Generación de PDF (reportes, certificados)
+│   │   │
+│   │   └── app.js                       # Configuración principal de Express (middlewares, rutas)
+│   │
+│   ├── 📂 temp/                         # Archivos temporales (PDFs generados)
+│   ├── 🐳 Dockerfile                    # Docker para backend
+│   ├── package.json                     # Dependencias del backend
+│   └── server.js                        # Punto de entrada del servidor
+│
+├── 🎨 frontend/                         # Interfaz web (HTML, CSS, JS vanilla)
+│   ├── 📂 public/
+│   │   ├── 🎨 css/                      # Estilos CSS
+│   │   │   ├── admin.css                # Estilos del panel de administración
+│   │   │   ├── auth.css                 # Estilos de login/registro (con ojito y medidor)
+│   │   │   ├── dashboard.css            # Estilos del dashboard (notificaciones, perfil, mapa)
+│   │   │   └── styles.css               # Estilos globales (tokens, reset, sidebar, modales)
+│   │   │
+│   │   ├── ⚡ js/                       # JavaScript del frontend
+│   │   │   ├── 📂 views/                # Controladores de cada vista del dashboard
+│   │   │   │   ├── alertas.js           # Lógica de la vista de alertas
+│   │   │   │   ├── buscador.js          # Lógica del buscador (tiempo real estilo Google)
+│   │   │   │   ├── consentimientos.js   # Lógica de gestión de consentimientos
+│   │   │   │   ├── incidentes.js        # Lógica de reporte de incidentes
+│   │   │   │   ├── mapa.js              # Lógica del mapa (Leaflet + geocodificación)
+│   │   │   │   └── riesgo.js            # Lógica del semáforo de riesgo (gráficos, filtraciones)
+│   │   │   │
+│   │   │   ├── admin.js                 # Panel de administración (CRUD usuarios, empresas)
+│   │   │   ├── api.js                   # Cliente API (peticiones al backend)
+│   │   │   ├── auth.js                  # Autenticación (login, registro, logout)
+│   │   │   ├── chatbot.js               # Widget del chatbot "Guardia"
+│   │   │   ├── dashboard.js             # Dashboard principal (carga de vistas, navegación)
+│   │   │   ├── password-helper.js       # Medidor de fortaleza y validación de contraseñas
+│   │   │   ├── ui.js                    # Utilidades UI (toasts, modales)
+│   │   │   └── validate.js              # Validación de formularios (captcha, términos)
+│   │   │
+│   │   ├── 📄 views/                    # Vistas HTML del dashboard
+│   │   │   ├── alertas.html             # Vista de alertas de seguridad
+│   │   │   ├── buscador.html            # Vista del buscador (tiempo real)
+│   │   │   ├── consentimientos.html     # Vista de gestión de consentimientos
+│   │   │   ├── incidentes.html          # Vista de reporte de incidentes
+│   │   │   ├── mapa.html                # Vista del mapa de incidentes
+│   │   │   └── riesgo.html              # Vista del semáforo de riesgo
+│   │   │
+│   │   ├── admin.html                   # Panel de administración (gestión usuarios)
+│   │   ├── dashboard.html               # Dashboard principal del usuario
+│   │   ├── forgot-password.html         # Recuperación de contraseña
+│   │   ├── index.html                   # Landing page + login/registro
+│   │   └── reset-password.html          # Restablecimiento de contraseña
+│   │
+│   ├── 🐳 Dockerfile                    # Docker para frontend
+│   └── nginx.conf                       # Configuración de Nginx (servir frontend)
+│
+├── 🤖 n8n/                              # Automatización con n8n
+│   └── 📂 workflows/
+│       └── chatbot_workflow.json        # Workflow de n8n para el chatbot
+│
+├── 🔐 .env                              # Variables de entorno (Supabase, JWT, email)
+├── 📄 .env.example                      # Ejemplo de variables de entorno
+├── 🚫 .gitignore                        # Archivos ignorados por Git
+├── 🐳 docker-compose.yml                # Orquestación de contenedores (backend, frontend, n8n)
+├── 📄 estructura.txt                    # Documentación de la estructura del proyecto
+├── 📦 package.json                      # Dependencias del backend (unificado)
+├── 📦 package-lock.json                 # Lock de dependencias
+├── 📄 README.md                         # Documentación del proyecto
+├── 🚀 server.js                         # Servidor unificado (frontend + backend)
+├── 🧪 test-breach.js                    # Prueba de verificación de filtraciones
+└── 🧪 test-email.js                     # Prueba de envío de correos
+
+## 📚 GLOSARIO DE TÉRMINOS TÉCNICOS - DATAGUARDMX
+
+### A - C
+
+| Término | Definición |
+|---------|------------|
+| **API** | Interfaz de Programación de Aplicaciones. Conjunto de reglas que permite la comunicación entre sistemas. |
+| **ARCO** | Derechos de Acceso, Rectificación, Cancelación y Oposición. Derechos fundamentales de protección de datos personales en México (LFPDPPP). |
+| **Auth** | Abreviatura de Autenticación. Proceso de verificar la identidad de un usuario mediante credenciales. |
+| **Backend** | Parte del sistema que corre en el servidor. Maneja lógica de negocio, bases de datos y autenticación. |
+| **bcrypt** | Biblioteca de hashing de contraseñas. Protege contraseñas mediante un algoritmo de cifrado unidireccional. |
+| **Breach** | Filtración de datos. Acceso no autorizado a información confidencial. |
+| **Cache** | Almacenamiento temporal de datos para acelerar accesos futuros y reducir latencia. |
+| **Captcha** | Prueba de verificación humano/máquina. Previene bots y spam en formularios. |
+| **CORS** | Intercambio de Recursos de Origen Cruzado. Mecanismo de seguridad que controla qué dominios pueden acceder a la API. |
+| **CRUD** | Create, Read, Update, Delete. Las cuatro operaciones básicas sobre datos en bases de datos. |
+| **CSP** | Política de Seguridad de Contenido. Previene ataques XSS (Cross-Site Scripting). |
+| **CURP** | Clave Única de Registro de Población. Identificador oficial de ciudadanos en México. |
+
+### D - F
+
+| Término | Definición |
+|---------|------------|
+| **Dashboard** | Panel de control. Interfaz que resume información clave del usuario de forma visual. |
+| **Debounce** | Técnica que retrasa la ejecución de una función hasta que cesan las llamadas consecutivas. Usado en buscadores. |
+| **Docker** | Plataforma de contenerización. Empaqueta aplicaciones con todas sus dependencias. |
+| **Endpoint** | Punto de entrada a una API. URL específica que acepta peticiones HTTP (GET, POST, etc.). |
+| **Express** | Framework web para Node.js. Simplifica la creación de APIs y servidores HTTP. |
+| **Env** | Variables de entorno. Configuración externa a la aplicación (puertos, claves, URLs). |
+| **Filtración** | Exposición no autorizada de datos personales o confidenciales. |
+| **FK** | Foreign Key (Clave Foránea). Relación entre tablas en base de datos. |
+| **Frontend** | Parte visible de la aplicación. Interfaz con la que interactúa directamente el usuario. |
+
+### G - J
+
+| Término | Definición |
+|---------|------------|
+| **Geocodificación** | Conversión de direcciones textuales a coordenadas geográficas (latitud/longitud). |
+| **GDPR** | Reglamento General de Protección de Datos. Normativa europea de privacidad. |
+| **Hashing** | Transformación irreversible de datos. Se usa para almacenar contraseñas de forma segura. |
+| **Helmet** | Middleware de seguridad para Express. Protege contra vulnerabilidades web comunes. |
+| **HIBP** | Have I Been Pwned. Servicio que verifica si un correo aparece en filtraciones conocidas. |
+| **Honeypot** | Trampa anti-bots. Campo oculto que los bots rellenan pero los humanos no ven. |
+| **IA** | Inteligencia Artificial. Simulación de procesos inteligentes por máquinas. |
+| **INAI** | Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales. Ente regulador en México. |
+| **JWT** | JSON Web Token. Estándar para crear tokens de autenticación seguros y firmados. |
+
+### L - N
+
+| Término | Definición |
+|---------|------------|
+| **Latencia** | Tiempo de respuesta entre una petición y su respuesta. |
+| **Leaflet** | Biblioteca JavaScript para mapas interactivos y ligeros. |
+| **LFPDPPP** | Ley Federal de Protección de Datos Personales en Posesión de los Particulares. Ley mexicana de privacidad. |
+| **LocalStorage** | Almacenamiento persistente en el navegador. Guarda datos entre sesiones. |
+| **Middleware** | Función que se ejecuta entre la petición y la respuesta. Procesa datos, valida, etc. |
+| **Modelo** | Representación de una entidad de datos. Define estructura y operaciones sobre una tabla. |
+| **MVP** | Producto Mínimo Viable. Versión inicial con funcionalidades esenciales. |
+| **n8n** | Plataforma de automatización de workflows de código abierto. |
+| **Nginx** | Servidor web y proxy inverso de alto rendimiento. |
+| **Node.js** | Entorno de ejecución de JavaScript en el servidor. |
+
+### O - R
+
+| Término | Definición |
+|---------|------------|
+| **PDF** | Portable Document Format. Formato de documento portátil. |
+| **PK** | Primary Key (Clave Primaria). Identificador único de cada registro en una tabla. |
+| **PostgreSQL** | Sistema de gestión de bases de datos relacional avanzado. |
+| **Proxy** | Intermediario entre cliente y servidor. Mejora seguridad y rendimiento. |
+| **Rate Limiting** | Límite de peticiones por IP. Previene ataques de denegación de servicio (DDoS). |
+| **RFC** | Registro Federal de Contribuyentes. Identificador fiscal de empresas en México. |
+| **Rol** | Permisos y funcionalidades asignados a un tipo de usuario (admin, ciudadano, empresa). |
+| **Ruta** | URL que responde a peticiones HTTP. Define endpoints de la API. |
+
+### S - U
+
+| Término | Definición |
+|---------|------------|
+| **SaaS** | Software as a Service. Software entregado como servicio por suscripción. |
+| **Script** | Archivo de código ejecutable. Automatiza tareas. |
+| **Sesión** | Periodo de interacción entre un usuario y la aplicación tras autenticarse. |
+| **SMTP** | Simple Mail Transfer Protocol. Protocolo para envío de correos electrónicos. |
+| **SQL** | Structured Query Language. Lenguaje para gestionar bases de datos relacionales. |
+| **SSL/TLS** | Protocolos de cifrado para comunicaciones seguras en internet. |
+| **Supabase** | Backend as a Service (PostgreSQL + Auth + Storage). Alternativa open-source a Firebase. |
+| **Token** | Cadena única que identifica a un usuario autenticado. Se usa en lugar de contraseña. |
+| **UI** | User Interface. Interfaz de usuario con la que interactúa la persona. |
+| **URL** | Localizador de recursos uniforme. Dirección web. |
+
+### V - Z
+
+| Término | Definición |
+|---------|------------|
+| **Variable de Entorno** | Valor configurable externamente a la aplicación (claves, puertos, URLs). |
+| **Webhook** | Mecanismo que notifica eventos a URLs específicas en tiempo real. |
+| **WebSocket** | Protocolo de comunicación bidireccional en tiempo real. |
+| **Workflow** | Flujo de trabajo automatizado. Secuencia de pasos orquestados. |
+| **XSS** | Cross-Site Scripting. Ataque que inyecta scripts maliciosos en páginas web. |
+| **2FA** | Autenticación de Dos Factores. Capa adicional de seguridad. |
+
+---
+
+## 🏷️ ABREVIATURAS COMUNES
+
+| Abreviatura | Significado |
+|-------------|-------------|
+| **BD** | Base de Datos |
+| **CDMX** | Ciudad de México |
+| **HTTP** | Protocolo de Transferencia de Hipertexto |
+| **HTTPS** | HTTP Seguro (cifrado SSL/TLS) |
+| **IP** | Dirección de Protocolo de Internet |
+| **JS** | JavaScript |
+| **JSON** | JavaScript Object Notation (formato de datos) |
+| **JWT** | JSON Web Token |
+| **LFPDPPP** | Ley Federal de Protección de Datos Personales |
+| **MXN** | Peso Mexicano |
+| **PyME** | Pequeña y Mediana Empresa |
+| **REST** | Representational State Transfer (estilo de arquitectura API) |
+| **SAT** | Servicio de Administración Tributaria |
+| **UUID** | Identificador Único Universal |
+
+---
+
+## 📊 TÉRMINOS ESPECÍFICOS DEL PROYECTO
+
+| Término | Definición |
+|---------|------------|
+| **DataGuardMX** | Plataforma SaaS de protección de identidad digital para México. |
+| **Guardia** | Nombre del chatbot asistente de privacidad. |
+| **Semáforo de Riesgo** | Indicador visual (verde/amarillo/rojo) del nivel de exposición de datos del usuario. |
+| **Últimas Filtraciones** | Sección que muestra incidentes de datos reportados por la comunidad. |
+| **Verificación de Filtraciones** | Función que comprueba si un correo aparece en bases de datos de filtraciones conocidas. |
+| **Chequeo Completo** | Análisis integral de seguridad del usuario (filtraciones + recomendaciones). |
+| **Certificado ARCO** | Documento que acredita cumplimiento de derechos ARCO para empresas. |
+| **CURP Virtual Temporal** | Identificador temporal para transacciones sin exponer la CURP real. |
+| **CRM de Privacidad** | Sistema de gestión de relaciones basado en consentimientos. |
+
+---
+
+## 🔧 TÉRMINOS DE SEGURIDAD
+
+| Término | Definición |
+|---------|------------|
+| **Autenticación** | Verificación de identidad del usuario (login). |
+| **Autorización** | Verificación de permisos del usuario autenticado. |
+| **Cifrado** | Transformación de datos para que solo el destinatario pueda leerlos. |
+| **Contraseña de Aplicación** | Clave especial de 16 dígitos para aplicaciones externas (Gmail). |
+| **Inyección SQL** | Ataque que inserta código SQL malicioso en consultas. |
+| **JWT Expiración** | Tiempo de vida del token de autenticación (8 horas en DataGuardMX). |
+| **Phishing** | Ataque que suplanta entidades legítimas para robar credenciales. |
+| **Rate Limit** | Límite de peticiones para prevenir abusos (100 req/15min en DataGuardMX). |
+| **Suplantación de Identidad** | Uso no autorizado de la identidad de otra persona. |
+
+---
+
+**Última actualización:** Abril 2026  
+**Versión del glosario:** 2.0  
+**Mantenido por:** DataGuardMX Team

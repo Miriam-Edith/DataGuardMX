@@ -1,0 +1,519 @@
+/* ============================================ */
+/* AUTH.CSS - ESTILOS PARA LOGIN Y REGISTRO     */
+/* DataGuardMX - Protege tu identidad digital   */
+/* ============================================ */
+
+/* ─── BASE PARA PÁGINAS DE AUTENTICACIÓN ─────────────────── */
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--ink);
+  margin: 0;
+  padding: 20px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-header i {
+  font-size: 3rem;
+  color: var(--teal);
+}
+
+.auth-header h2 {
+  color: var(--bright);
+  margin-top: 1rem;
+  font-family: var(--mono);
+  font-size: 1.5rem;
+}
+
+.auth-header p {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+/* ─── TABS ───────────────────────────────────────────────── */
+.auth-tabs {
+  display: flex;
+  border-radius: 12px;
+  background: var(--deep);
+  padding: 4px;
+  margin-bottom: 2rem;
+  gap: 4px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.auth-tab.active {
+  background: var(--edge);
+  color: var(--teal);
+}
+
+/* ─── FORMULARIOS ────────────────────────────────────────── */
+.auth-form {
+  display: none;
+}
+
+.auth-form.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── CAMPOS ─────────────────────────────────────────────── */
+.auth-field {
+  margin-bottom: 1.25rem;
+}
+
+.auth-field label {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.auth-field input,
+.auth-field select {
+  width: 100%;
+  background: var(--deep);
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: var(--bright);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.auth-field input:focus,
+.auth-field select:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(0,201,167,0.1);
+}
+
+.auth-field input::placeholder {
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.auth-field small {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+/* ─── PASSWORD HINT ──────────────────────────────────────── */
+.password-hint {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+/* ─── CAPTCHA ────────────────────────────────────────────── */
+.captcha-box {
+  margin: 1.25rem 0;
+  padding: 1rem;
+  background: var(--deep);
+  border: 1px dashed var(--edge);
+  border-radius: 12px;
+}
+
+.captcha-title {
+  color: var(--teal);
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.captcha-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.captcha-question {
+  padding: 10px 16px;
+  background: var(--panel);
+  border-radius: 30px;
+  font-family: var(--mono);
+  color: var(--teal);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.captcha-question:hover {
+  background: var(--teal);
+  color: var(--ink);
+}
+
+.captcha-input {
+  width: 100px;
+  text-align: center;
+}
+
+/* ─── CHECKBOX ───────────────────────────────────────────── */
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 1.25rem 0;
+}
+
+.checkbox-field input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.checkbox-field label {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* ─── BOTONES ────────────────────────────────────────────── */
+.auth-btn {
+  width: 100%;
+  padding: 0.85rem;
+  background: linear-gradient(135deg, var(--teal), var(--teal2));
+  color: var(--ink);
+  border: none;
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.2s;
+}
+
+.auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,201,167,0.3);
+}
+
+.auth-btn:active {
+  transform: translateY(0);
+}
+
+.auth-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ─── ENLACES ────────────────────────────────────────────── */
+.auth-links {
+  text-align: center;
+  margin-top: 1.25rem;
+}
+
+.auth-links a {
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.auth-links a:hover {
+  color: var(--teal);
+}
+
+.forgot-link {
+  text-align: right;
+  margin-top: 0.5rem;
+}
+
+.forgot-link a {
+  font-size: 0.7rem;
+}
+
+/* ─── MENSAJES DE ERROR/ÉXITO ────────────────────────────── */
+.auth-error {
+  background: rgba(231,76,60,0.1);
+  border: 1px solid var(--red);
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--red);
+  font-size: 0.85rem;
+  margin: 1rem 0;
+}
+
+.auth-success {
+  background: rgba(46,204,113,0.1);
+  border: 1px solid var(--green);
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--green);
+  font-size: 0.85rem;
+  margin: 1rem 0;
+}
+
+.field-error {
+  color: var(--red);
+  font-size: 0.7rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+/* ─── MENSAJE PARA EMPRESAS ───────────────────────────────── */
+.empresa-mensaje {
+  background: rgba(0,229,195,0.1);
+  border: 1px solid var(--teal);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+  animation: fadeIn 0.3s ease;
+}
+
+.empresa-mensaje i {
+  color: var(--teal);
+  font-size: 1.2rem;
+}
+
+.empresa-mensaje strong {
+  color: var(--teal);
+}
+
+.empresa-mensaje p {
+  color: var(--text);
+  font-size: 0.8rem;
+  margin: 0.5rem 0;
+}
+
+.whatsapp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #25D366;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  transition: transform 0.2s;
+}
+
+.whatsapp-link:hover {
+  transform: scale(1.02);
+  color: white;
+}
+
+.whatsapp-link i {
+  color: white;
+  font-size: 1rem;
+}
+
+/* ─── HONEYPOT (ANTI-BOT) ────────────────────────────────── */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 1.5rem;
+  }
+  
+  .auth-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .captcha-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .captcha-input {
+    width: 100%;
+  }
+}
+/* ============================================ */
+/* ESTILOS ADICIONALES PARA LOGIN/REGISTRO      */
+/* ============================================ */
+
+/* ─── OJITO PARA MOSTRAR CONTRASEÑA ───────────────────────── */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  flex: 1;
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.toggle-password:hover {
+  color: var(--teal);
+}
+
+/* ─── MEDIDOR DE FORTALEZA DE CONTRASEÑA ──────────────────── */
+.password-strength-container {
+  margin-top: 0.5rem;
+}
+
+.strength-meter {
+  height: 4px;
+  background: var(--edge);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.strength-meter-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease, background 0.3s ease;
+  border-radius: 2px;
+}
+
+.strength-meter-fill.weak {
+  width: 25%;
+  background: var(--red);
+}
+
+.strength-meter-fill.medium {
+  width: 50%;
+  background: var(--yellow);
+}
+
+.strength-meter-fill.strong {
+  width: 75%;
+  background: #66bb6a;
+}
+
+.strength-meter-fill.very-strong {
+  width: 100%;
+  background: var(--green);
+}
+
+.strength-text {
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.strength-text.weak { color: var(--red); }
+.strength-text.medium { color: var(--yellow); }
+.strength-text.strong { color: #66bb6a; }
+.strength-text.very-strong { color: var(--green); }
+
+/* ─── REQUISITOS DE CONTRASEÑA ────────────────────────────── */
+.password-requirements {
+  margin-top: 0.5rem;
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.password-requirements ul {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.password-requirements li {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.password-requirements li i {
+  font-size: 0.6rem;
+  width: 12px;
+}
+
+.password-requirements li.valid {
+  color: var(--green);
+}
+
+.password-requirements li.invalid {
+  color: var(--red);
+}
+
+/* ─── TOOLTIP PARA REQUISITOS ─────────────────────────────── */
+.requirement-hint {
+  cursor: help;
+  border-bottom: 1px dotted var(--muted);
+}
+
+/* ─── ANIMACIONES ─────────────────────────────────────────── */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.input-error {
+  border-color: var(--red) !important;
+  animation: shake 0.3s ease;
+}
+
+.input-valid {
+  border-color: var(--green) !important;
+}

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="theme-color" content="#080f14">
+  <meta name="description" content="DataGuardMX - Protege tu identidad digital en México">
+  <title>DataGuardMX — Dashboard de Privacidad</title>
+  
+  <!-- Fuentes y librerías externas -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"/>
+  
+  <!-- Estilos locales -->
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  
+  <!-- Scripts externos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+  <!-- Header / Navegación Superior -->
+  <nav class="topnav">
+    <div class="nav-left">
+      <button class="menu-toggle" id="menuBtn" aria-label="Menú">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="brand">
+        <div class="brand-hex">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        Data<span>Guard</span>MX
+      </div>
+      <!-- Indicador de conexión -->
+      <div class="connection-status" id="connectionStatus">
+        <i class="fas fa-circle"></i>
+        <span>Conectado</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <!-- Notificaciones -->
+      <div class="notifications-dropdown" id="notificationsDropdown">
+        <button class="btn-notifications" id="notificationsBtn">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge" id="notificationBadge">0</span>
+        </button>
+        <div class="notifications-panel" id="notificationsPanel">
+          <div class="notifications-header">
+            <span>Notificaciones</span>
+            <button id="markAllRead">Marcar todas como leídas</button>
+          </div>
+          <div class="notifications-list" id="notificationsList">
+            <div class="notification-empty">No hay notificaciones</div>
+          </div>
+        </div>
+      </div>
+      
+      <button class="btn-profile" id="profileBtn">
+        <i class="fas fa-user-circle"></i> 
+        <span class="profile-text">Perfil</span>
+      </button>
+      <span class="role-badge" id="userRoleBadge">CIUDADANO</span>
+      <button class="btn-logout" id="logoutBtn">
+        <i class="fas fa-sign-out-alt"></i> 
+        <span class="logout-text">Salir</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Layout Principal -->
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">Principal</div>
+      <button class="nav-item active" data-view="riesgo">
+        <i class="fas fa-chart-pie"></i> 
+        <span>Semáforo de Riesgo</span>
+        <span class="nav-badge" id="riskBadge"></span>
+      </button>
+      <button class="nav-item" data-view="consentimientos">
+        <i class="fas fa-hand-peace"></i> 
+        <span>Consentimientos</span>
+        <span class="nav-badge" id="consentBadge"></span>
+      </button>
+      <button class="nav-item" data-view="incidentes">
+        <i class="fas fa-exclamation-triangle"></i> 
+        <span>Incidentes</span>
+        <span class="nav-badge" id="incidentBadge"></span>
+      </button>
+      <button class="nav-item" data-view="alertas">
+        <i class="fas fa-bell"></i> 
+        <span>Alertas</span>
+        <span class="nav-badge warning" id="alertBadge">0</span>
+      </button>
+      <button class="nav-item" data-view="mapa">
+        <i class="fas fa-map-marker-alt"></i> 
+        <span>Mapa de Incidentes</span>
+      </button>
+      <button class="nav-item" data-view="buscador">
+        <i class="fas fa-search"></i> 
+        <span>Buscador</span>
+      </button>
+      
+      <!-- Sección de Reportes Exportables -->
+      <div class="sidebar-section">Reportes</div>
+      <button class="nav-item" id="exportConsentimientosBtn">
+        <i class="fas fa-file-pdf"></i> 
+        <span>Exportar Consentimientos</span>
+      </button>
+      <button class="nav-item" id="exportIncidentesBtn">
+        <i class="fas fa-file-pdf"></i> 
+        <span>Exportar Incidentes</span>
+      </button>
+      <button class="nav-item" id="exportARCOBtn" style="display: none;">
+        <i class="fas fa-certificate"></i> 
+        <span>Certificado ARCO</span>
+      </button>
+      
+      <div class="sidebar-section" style="margin-top: auto;">Soporte</div>
+      <button class="nav-item" onclick="window.open('#', '_blank')">
+        <i class="fas fa-book"></i> 
+        <span>Documentación</span>
+      </button>
+      <button class="nav-item" onclick="window.open('#', '_blank')">
+        <i class="fas fa-headset"></i> 
+        <span>Centro de Ayuda</span>
+      </button>
+      
+      <!-- Versión -->
+      <div class="sidebar-version">
+        <span>v2.0.0</span>
+        <span>LFPDPPP Compliant</span>
+      </div>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <main class="main" id="mainPanel">
+      <div class="loading-state">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Cargando dashboard...</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- MODALES                                     -->
+  <!-- ============================================ -->
+
+  <!-- Modal Consentimiento -->
+  <div id="modalConsentimiento" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title-block">
+          <div class="modal-icon-wrap"><i class="fas fa-hand-peace"></i></div>
+          <div><h3>Nuevo Consentimiento</h3><p>Registra el tratamiento de tus datos personales</p></div>
+        </div>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Empresa o Institución <span style="color:var(--red);">*</span></label>
+          <input type="text" id="consentEmpresa" placeholder="Ej. Banco Nacional, Clínica ABC, Universidad..." autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Finalidad del tratamiento</label>
+          <textarea id="consentFinalidad" rows="3" placeholder="Describe para qué usarán tus datos personales..."></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Fecha de vigencia</label>
+            <input type="date" id="consentVigencia">
+          </div>
+          <div class="field">
+            <label>Tipo de dato</label>
+            <select id="consentTipo">
+              <option value="personales">Datos personales básicos</option>
+              <option value="sensibles">Datos sensibles</option>
+              <option value="financieros">Datos financieros</option>
+              <option value="biometricos">Datos biométricos</option>
+            </select>
+          </div>
+        </div>
+        <div class="checkbox-field">
+          <input type="checkbox" id="consentNotificaciones">
+          <label>Recibir notificaciones sobre cambios en este consentimiento</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-outline modal-close">Cancelar</button>
+        <button class="btn-primary" id="saveConsentimientoBtn">Guardar Consentimiento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Incidente -->
+  <div id="modalIncidente" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title-block">
+          <div class="modal-icon-wrap red">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div>
+            <h3>Reportar Incidente de Datos</h3>
+            <p>Notifica sobre brechas, filtraciones o accesos no autorizados</p>
+          </div>
+        </div>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="field-row">
+          <div class="field">
+            <label>Tipo de incidente <span style="color:var(--red);">*</span></label>
+            <select id="incidenteTipo">
+              <option value="Filtración de datos">🔓 Filtración de datos</option>
+              <option value="Acceso no autorizado">🚪 Acceso no autorizado</option>
+              <option value="Pérdida de información">💾 Pérdida de información</option>
+              <option value="Suplantación de identidad">🎭 Suplantación de identidad</option>
+              <option value="Phishing">🎣 Phishing</option>
+              <option value="Malware/Ransomware">💀 Malware/Ransomware</option>
+              <option value="Otro">❓ Otro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Nivel de severidad</label>
+            <select id="incidenteSeveridad">
+              <option value="baja">🟢 Baja</option>
+              <option value="media">🟡 Media</option>
+              <option value="alta">🔴 Alta</option>
+              <option value="critica">⚫ Crítica</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Fecha del incidente</label>
+            <input type="date" id="incidenteFecha">
+          </div>
+          <div class="field">
+            <label>¿Está resuelto?</label>
+            <select id="incidenteEstado">
+              <option value="pendiente">Pendiente</option>
+              <option value="en_proceso">En proceso</option>
+              <option value="resuelto">Resuelto</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Entidad/Organización afectada</label>
+          <input type="text" id="incidenteEntidad" placeholder="Ej. Hospital ABC, Banco XYZ, Gobierno..." autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Descripción detallada <span style="color:var(--red);">*</span></label>
+          <textarea id="incidenteDescripcion" rows="4" placeholder="Describe lo sucedido, datos comprometidos, posibles causas..."></textarea>
+        </div>
+        <div class="field">
+          <label>Evidencia (opcional)</label>
+          <input type="file" id="incidenteEvidencia" accept="image/*,.pdf">
+          <small>Capturas de pantalla o documentos relevantes</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-outline modal-close">Cancelar</button>
+        <button class="btn-primary" id="saveIncidenteBtn">Enviar Reporte</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Perfil -->
+  <div id="modalPerfil" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title-block">
+          <div class="modal-icon-wrap">
+            <i class="fas fa-user-astronaut"></i>
+          </div>
+          <div>
+            <h3>Mi Perfil</h3>
+            <p>Administra tu información personal y seguridad</p>
+          </div>
+        </div>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Pestañas dentro del perfil -->
+        <div class="profile-tabs">
+          <button class="profile-tab active" data-tab="info">Información</button>
+          <button class="profile-tab" data-tab="security">Seguridad</button>
+          <button class="profile-tab" data-tab="preferences">Preferencias</button>
+        </div>
+        
+        <!-- Pestaña Información -->
+        <div class="profile-tab-content active" id="tab-info">
+          <div class="field-row">
+            <div class="field">
+              <label>Nombre completo</label>
+              <input type="text" id="perfilNombre" placeholder="Tu nombre completo">
+            </div>
+            <div class="field">
+              <label>Teléfono</label>
+              <input type="tel" id="perfilTelefono" placeholder="55 1234 5678">
+            </div>
+          </div>
+          <div class="field">
+            <label>Correo electrónico</label>
+            <input type="email" id="perfilEmail" disabled readonly>
+          </div>
+          <div class="field">
+            <label>Dirección</label>
+            <textarea id="perfilDireccion" rows="2" placeholder="Dirección completa (opcional)"></textarea>
+          </div>
+          <div id="perfilEmpresaField" class="field" style="display:none;">
+            <label>Nombre de la empresa</label>
+            <input type="text" id="perfilEmpresa" placeholder="Nombre de tu empresa">
+          </div>
+          <div class="field">
+            <label>RFC (opcional)</label>
+            <input type="text" id="perfilRFC" placeholder="RFC para facturación">
+          </div>
+        </div>
+        
+        <!-- Pestaña Seguridad -->
+        <div class="profile-tab-content" id="tab-security">
+          <div class="security-status">
+            <div class="security-item">
+              <i class="fas fa-check-circle" style="color: var(--green);"></i>
+              <span>Verificación en dos pasos: <strong>Desactivada</strong></span>
+              <button class="btn-outline btn-sm" id="enable2FA">Activar</button>
+            </div>
+            <div class="security-item">
+              <i class="fas fa-clock"></i>
+              <span>Último acceso: <strong id="lastLogin">--/--/----</strong></span>
+            </div>
+            <div class="security-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>Última IP: <strong id="lastIP">---.---.---.---</strong></span>
+            </div>
+          </div>
+          
+          <div class="section-divider">
+            <span>Cambiar contraseña</span>
+          </div>
+          
+          <div class="field">
+            <label>Contraseña actual</label>
+            <input type="password" id="perfilPasswordActual" placeholder="••••••••">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Nueva contraseña</label>
+              <input type="password" id="perfilPasswordNueva" placeholder="••••••••">
+              <div class="password-strength" id="passwordStrength"></div>
+            </div>
+            <div class="field">
+              <label>Confirmar contraseña</label>
+              <input type="password" id="perfilPasswordConfirm" placeholder="••••••••">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pestaña Preferencias -->
+        <div class="profile-tab-content" id="tab-preferences">
+          <div class="checkbox-field">
+            <input type="checkbox" id="prefEmailNotifications" checked>
+            <label>Recibir alertas por correo electrónico</label>
+          </div>
+          <div class="checkbox-field">
+            <input type="checkbox" id="prefPushNotifications" checked>
+            <label>Notificaciones push en el dashboard</label>
+          </div>
+          <div class="checkbox-field">
+            <input type="checkbox" id="prefWeeklyDigest">
+            <label>Recibir resumen semanal de seguridad</label>
+          </div>
+          <div class="checkbox-field">
+            <input type="checkbox" id="prefMarketing">
+            <label>Recibir novedades y consejos de privacidad</label>
+          </div>
+          <div class="field">
+            <label>Idioma preferido</label>
+            <select id="prefLanguage">
+              <option value="es">Español (México)</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-outline modal-close">Cancelar</button>
+        <button class="btn-primary" id="savePerfilBtn">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2FA -->
+  <div id="modal2FA" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title-block">
+          <div class="modal-icon-wrap"><i class="fas fa-shield-alt"></i></div>
+          <div><h3>Verificación en Dos Pasos</h3><p>Protege tu cuenta con autenticación 2FA</p></div>
+        </div>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="qr-container" style="text-align: center;">
+          <div id="qrCode"></div>
+          <p>Escanea este código con Google Authenticator o similar</p>
+          <div class="field">
+            <label>Código de verificación</label>
+            <input type="text" id="2faCode" placeholder="000000" maxlength="6">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-outline modal-close">Cancelar</button>
+        <button class="btn-primary" id="verify2FABtn">Verificar y Activar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Exportación -->
+  <div id="modalExport" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title-block">
+          <div class="modal-icon-wrap"><i class="fas fa-file-export"></i></div>
+          <div><h3>Exportar Reporte</h3><p>Genera un documento PDF con tu información</p></div>
+        </div>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Formato de exportación</label>
+          <select id="exportFormat">
+            <option value="pdf">PDF</option>
+            <option value="csv">CSV (Excel)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Rango de fechas</label>
+          <div class="field-row">
+            <input type="date" id="exportDateFrom">
+            <input type="date" id="exportDateTo">
+          </div>
+        </div>
+        <div class="checkbox-field">
+          <input type="checkbox" id="exportIncludeDetails">
+          <label>Incluir detalles completos</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-outline modal-close">Cancelar</button>
+        <button class="btn-primary" id="confirmExportBtn">Generar Reporte</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Scripts modulares -->
+  <script src="js/api.js"></script>
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<div class="section-title">
+  <i class="fas fa-chart-line"></i> Semáforo de riesgo
+</div>
+
+<!-- Grid principal de riesgo -->
+<div class="grid-2" style="margin-bottom: 1.25rem;">
+  <!-- Gráfico de dona -->
+  <div class="card" style="display: flex; align-items: center; justify-content: center;">
+    <canvas id="riskChart" style="max-height: 260px; width: 100%;"></canvas>
+  </div>
+  
+  <!-- Semáforo de riesgo -->
+  <div class="card" style="display: flex; flex-direction: column; justify-content: center; gap: 1rem;">
+    <div id="semaforoCard" class="semaforo-big verde">
+      <span class="semaforo-label">Nivel de riesgo</span>
+      <div>● Cargando...</div>
+    </div>
+    <p class="info-text">
+      <i class="fas fa-info-circle"></i> 
+      El nivel de riesgo se calcula en base a tus alertas de seguridad no leídas, 
+      exposición de datos y actividad reciente.
+    </p>
+  </div>
+</div>
+
+<!-- Estadísticas rápidas -->
+<div id="riskStats" class="grid-3" style="margin-top: 1rem;">
+  <div class="stat-item">Cargando estadísticas...</div>
+</div>
+
+<!-- ============================================ -->
+<!-- NUEVA SECCIÓN: Verificación de Filtraciones   -->
+<!-- ============================================ -->
+<div class="card" style="margin-top: 1.5rem; padding: 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3 style="color: var(--cyan); font-family: var(--mono); font-size: 0.9rem; margin: 0;">
+      <i class="fas fa-database"></i> Verificación de Filtraciones
+    </h3>
+    <button class="btn-teal btn-sm" id="checkBreachesBtn" onclick="verificarFiltraciones()">
+      <i class="fas fa-sync-alt"></i> Verificar ahora
+    </button>
+  </div>
+  
+  <div id="breachesResult" style="min-height: 80px;">
+    <p style="color: var(--text2);">
+      <i class="fas fa-info-circle"></i> 
+      Haz clic en "Verificar ahora" para comprobar si tu correo aparece en filtraciones de datos conocidas.
+    </p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- NUEVA SECCIÓN: Últimas Filtraciones Globales  -->
+<!-- ============================================ -->
+<div class="card" style="margin-top: 1.5rem; padding: 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3 style="color: var(--cyan); font-family: var(--mono); font-size: 0.9rem; margin: 0;">
+      <i class="fas fa-globe"></i> Últimas Filtraciones Globales
+    </h3>
+    <button class="btn-outline btn-sm" onclick="cargarUltimasFiltraciones()">
+      <i class="fas fa-redo-alt"></i> Actualizar
+    </button>
+  </div>
+  
+  <div id="latestBreachesList">
+    <p style="color: var(--text2); text-align: center; padding: 20px;">
+      <i class="fas fa-spinner fa-spin"></i> Cargando información...
+    </p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- NUEVA SECCIÓN: Chequeo Completo de Seguridad  -->
+<!-- ============================================ -->
+<div class="card" style="margin-top: 1.5rem; padding: 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3 style="color: var(--cyan); font-family: var(--mono); font-size: 0.9rem; margin: 0;">
+      <i class="fas fa-shield-alt"></i> Chequeo Completo de Seguridad
+    </h3>
+    <button class="btn-primary btn-sm" id="fullCheckBtn" onclick="realizarChequeoCompleto()">
+      <i class="fas fa-search"></i> Analizar ahora
+    </button>
+  </div>
+  
+  <div id="fullCheckResult">
+    <p style="color: var(--text2);">
+      <i class="fas fa-info-circle"></i> 
+      Realiza un análisis completo de tu seguridad digital.
+    </p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- NUEVA SECCIÓN: Exportación de Reportes       -->
+<!-- ============================================ -->
+<div class="card" style="margin-top: 1.5rem; padding: 1.5rem;">
+  <h3 style="color: var(--cyan); font-family: var(--mono); font-size: 0.9rem; margin-bottom: 1rem;">
+    <i class="fas fa-file-export"></i> Exportar Reportes
+  </h3>
+  
+  <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+    <button class="btn-outline" onclick="exportarConsentimientos()">
+      <i class="fas fa-file-pdf"></i> Consentimientos (PDF)
+    </button>
+    <button class="btn-outline" onclick="exportarIncidentes()">
+      <i class="fas fa-file-pdf"></i> Incidentes (PDF)
+    </button>
+    <button class="btn-outline" id="exportARCOBtn" onclick="exportarCertificadoARCO()" style="display: none;">
+      <i class="fas fa-certificate"></i> Certificado ARCO
+    </button>
+  </div>
+  
+  <p style="color: var(--text2); font-size: 0.75rem; margin-top: 1rem;">
+    <i class="fas fa-info-circle"></i> 
+    Los reportes se generan en formato PDF y contienen toda tu información registrada.
+  </p>
+</div>
+
+<!-- ============================================ -->
+<!-- NUEVA SECCIÓN: Recomendaciones de Seguridad   -->
+<!-- ============================================ -->
+<div id="securityRecommendations" class="card" style="margin-top: 1.5rem; padding: 1.5rem; display: none;">
+  <h3 style="color: var(--amber); font-family: var(--mono); font-size: 0.9rem; margin-bottom: 1rem;">
+    <i class="fas fa-lightbulb"></i> Recomendaciones de Seguridad
+  </h3>
+  
+  <div id="recommendationsList" style="color: var(--text);">
+    <!-- Se llena dinámicamente -->
+  </div>
+</div>

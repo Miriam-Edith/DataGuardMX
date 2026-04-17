@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DataGuardMX — Panel Administrativo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <nav class="topnav">
+    <div class="brand">
+      <div class="brand-hex"><i class="fas fa-user-shield"></i></div>
+      Data<span>Guard</span>MX &nbsp;<span style="color:var(--muted);font-size:.75rem">/ ADMIN</span>
+    </div>
+    <div class="nav-right">
+      <span class="admin-badge"><i class="fas fa-shield-alt"></i> ROOT ACCESS</span>
+      <button class="btn-logout" id="logoutAdmin"><i class="fas fa-sign-out-alt"></i> SALIR</button>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="dashboard">
+        <i class="fas fa-chart-line"></i> Dashboard
+      </button>
+      <button class="tab-btn" data-tab="users">
+        <i class="fas fa-users"></i> Usuarios
+        <span class="tab-count" id="usersCount">0</span>
+      </button>
+      <button class="tab-btn" data-tab="create-user">
+        <i class="fas fa-user-plus"></i> Crear Usuario
+      </button>
+      <button class="tab-btn" data-tab="empresas">
+        <i class="fas fa-building"></i> Empresas
+        <span class="tab-count" id="empresasCount">0</span>
+      </button>
+      <button class="tab-btn" data-tab="reportes">
+        <i class="fas fa-file-alt"></i> Reportes
+        <span class="tab-count" id="reportesCount">0</span>
+      </button>
+    </div>
+
+    <div class="content">
+      <!-- ============================================ -->
+      <!-- PANEL DASHBOARD (Estadísticas)                -->
+      <!-- ============================================ -->
+      <div class="tab-panel active" id="panel-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-card-label"><i class="fas fa-users"></i> Total Usuarios</div>
+            <div class="stat-card-num teal" id="statTotal">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label"><i class="fas fa-user-check"></i> Usuarios Activos</div>
+            <div class="stat-card-num" id="statActivos">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label"><i class="fas fa-user-slash"></i> Usuarios Inactivos</div>
+            <div class="stat-card-num red" id="statInactivos">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label"><i class="fas fa-building"></i> Empresas</div>
+            <div class="stat-card-num" id="statEmpresas">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label"><i class="fas fa-file-alt"></i> Reportes Totales</div>
+            <div class="stat-card-num yellow" id="statReportes">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label"><i class="fas fa-bell"></i> Alertas Activas</div>
+            <div class="stat-card-num" id="statAlertas">—</div>
+          </div>
+        </div>
+        
+        <!-- Gráfico de actividad reciente -->
+        <div class="card" style="margin-top: 1rem;">
+          <h3 style="color: var(--teal); margin-bottom: 1rem;"><i class="fas fa-chart-bar"></i> Actividad Reciente</h3>
+          <div id="recentActivity">
+            <div class="loading-state">Cargando actividad...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- PANEL USUARIOS (con filtros y acciones)      -->
+      <!-- ============================================ -->
+      <div class="tab-panel" id="panel-users">
+        <div class="section-hdr">
+          <div class="section-title"><i class="fas fa-users"></i> Gestión de Usuarios</div>
+          <div class="section-meta" id="usersMeta"></div>
+        </div>
+        
+        <!-- Filtros -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+            <div style="flex: 2;">
+              <label><i class="fas fa-search"></i> Buscar</label>
+              <input type="text" id="filtroSearch" placeholder="Email, nombre o empresa..." class="field-input">
+            </div>
+            <div style="width: 150px;">
+              <label><i class="fas fa-tag"></i> Rol</label>
+              <select id="filtroRol">
+                <option value="">Todos</option>
+                <option value="ciudadano">Ciudadano</option>
+                <option value="empresa">Empresa</option>
+                <option value="admin">Administrador</option>
+              </select>
+            </div>
+            <div style="width: 150px;">
+              <label><i class="fas fa-circle"></i> Estado</label>
+              <select id="filtroStatus">
+                <option value="">Todos</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn-outline" onclick="limpiarFiltros()"><i class="fas fa-eraser"></i> Limpiar</button>
+              <button class="btn-primary" onclick="aplicarFiltros()"><i class="fas fa-filter"></i> Filtrar</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="table-wrap">
+          <table class="data-table" id="usersTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Nombre</th>
+                <th>Rol</th>
+                <th>Empresa</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr><td colspan="8" class="text-center">Cargando usuarios...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- PANEL CREAR USUARIO                          -->
+      <!-- ============================================ -->
+      <div class="tab-panel" id="panel-create-user">
+        <div class="section-hdr">
+          <div class="section-title"><i class="fas fa-user-plus"></i> Crear Nuevo Usuario</div>
+          <div class="section-meta">Completa los datos para crear una cuenta</div>
+        </div>
+        
+        <div class="card" style="max-width: 700px; margin: 0 auto;">
+          <form id="formCrearUsuario">
+            <div class="field-row">
+              <div class="field">
+                <label>Nombre completo</label>
+                <input type="text" id="usuarioNombre" placeholder="Juan Pérez">
+              </div>
+              <div class="field">
+                <label>Correo electrónico <span style="color:var(--red);">*</span></label>
+                <input type="email" id="usuarioEmail" required placeholder="usuario@ejemplo.com">
+              </div>
+            </div>
+            
+            <div class="field-row">
+              <div class="field">
+                <label>Teléfono</label>
+                <input type="tel" id="usuarioTelefono" placeholder="5512345678">
+              </div>
+              <div class="field">
+                <label>Dirección</label>
+                <input type="text" id="usuarioDireccion" placeholder="Calle y número">
+              </div>
+            </div>
+            
+            <div class="field-row">
+              <div class="field">
+                <label>Rol</label>
+                <select id="usuarioRol">
+                  <option value="ciudadano">👤 Ciudadano</option>
+                  <option value="empresa">🏢 Empresa</option>
+                  <option value="admin">👑 Administrador</option>
+                </select>
+              </div>
+              <div class="field" id="usuarioEmpresaField" style="display:none">
+                <label>Nombre de la empresa</label>
+                <input type="text" id="usuarioEmpresa" placeholder="Mi Empresa S.A.">
+              </div>
+            </div>
+            
+            <div class="field-row">
+              <div class="field">
+                <label>Contraseña temporal</label>
+                <div style="display: flex; gap: 0.5rem;">
+                  <input type="text" id="usuarioPassword" readonly style="flex:1; font-family: monospace;">
+                  <button type="button" class="btn-outline" id="generarPasswordUsuario"><i class="fas fa-sync-alt"></i></button>
+                </div>
+              </div>
+              <div class="field">
+                <label>&nbsp;</label>
+                <div class="checkbox-field">
+                  <input type="checkbox" id="usuarioEnviarEmail" checked>
+                  <label><i class="fas fa-envelope"></i> Enviar credenciales por email</label>
+                </div>
+              </div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+              <button type="button" class="btn-outline" id="limpiarFormUsuario"><i class="fas fa-eraser"></i> Limpiar</button>
+              <button type="submit" class="btn-primary" id="crearUsuarioBtn">
+                <i class="fas fa-save"></i> Crear Usuario
+              </button>
+            </div>
+            
+            <div id="usuarioResultado" class="status-message" style="display: none;"></div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- PANEL EMPRESAS                               -->
+      <!-- ============================================ -->
+      <div class="tab-panel" id="panel-empresas">
+        <div class="section-hdr">
+          <div class="section-title"><i class="fas fa-building"></i> Empresas Registradas</div>
+          <div class="section-meta" id="empresasMeta"></div>
+        </div>
+        
+        <div class="table-wrap">
+          <table class="data-table" id="empresasTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Empresa</th>
+                <th>RFC</th>
+                <th>Email</th>
+                <th>Contacto</th>
+                <th>Teléfono</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="empresasTableBody">
+              <tr><td colspan="8" class="text-center">Cargando empresas...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- PANEL REPORTES                               -->
+      <!-- ============================================ -->
+      <div class="tab-panel" id="panel-reportes">
+        <div class="section-hdr">
+          <div class="section-title"><i class="fas fa-file-alt"></i> Reportes Ciudadanos</div>
+          <div class="section-meta" id="reportesMeta"></div>
+        </div>
+        
+        <div class="table-wrap">
+          <table class="data-table" id="reportesTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Tipo de Incidente</th>
+                <th>Ubicación</th>
+                <th>Fecha</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody id="reportesTableBody">
+              <tr><td colspan="6" class="text-center">Cargando reportes...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- MODALES                                      -->
+  <!-- ============================================ -->
+  
+  <!-- Modal Editar Usuario -->
+  <div id="modalEditUser" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-container" style="max-width: 550px;">
+      <div class="modal-header">
+        <div class="modal-title-block">
+          <div class="modal-icon-wrap"><i class="fas fa-user-edit"></i></div>
+          <div><h3>Editar Usuario</h3><p>Modifica los datos del usuario</p></div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modalEditUser')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editUserId">
+        <div class="field-row">
+          <div class="field">
+            <label>Nombre completo</label>
+            <input type="text" id="editNombre">
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" id="editEmail" readonly disabled>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Teléfono</label>
+            <input type="tel" id="editTelefono">
+          </div>
+          <div class="field">
+            <label>Dirección</label>
+            <input type="text" id="editDireccion">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Rol</label>
+            <select id="editRol">
+              <option value="ciudadano">Ciudadano</option>
+              <option value="empresa">Empresa</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+          <div class="field" id="editEmpresaField" style="display:none">
+            <label>Empresa</label>
+            <input type="text" id="editEmpresaNombre" placeholder="Nombre de la empresa">
+          </div>
+        </div>
+        <div class="checkbox-field">
+          <input type="checkbox" id="editActivo">
+          <label><i class="fas fa-circle"></i> Usuario activo</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-outline" onclick="closeModal('modalEditUser')">Cancelar</button>
+        <button class="btn-primary" onclick="guardarEdicionUsuario()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Resetear Contraseña -->
+  <div id="modalResetPassword" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-container" style="max-width: 450px;">
+      <div class="modal-header">
+        <div class="modal-title-block">
+          <div class="modal-icon-wrap"><i class="fas fa-key"></i></div>
+          <div><h3>Resetear Contraseña</h3><p>Genera una nueva contraseña para el usuario</p></div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modalResetPassword')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="resetUserId">
+        <p style="margin-bottom: 1rem;">Usuario: <strong id="resetUserEmail"></strong></p>
+        <div class="field">
+          <label>Nueva contraseña</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="resetPasswordValue" readonly style="flex:1; font-family: monospace;">
+            <button type="button" class="btn-outline" onclick="generarNuevaPassword()"><i class="fas fa-sync-alt"></i></button>
+          </div>
+        </div>
+        <div class="checkbox-field">
+          <input type="checkbox" id="resetEnviarEmail" checked>
+          <label><i class="fas fa-envelope"></i> Enviar nueva contraseña por email</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-outline" onclick="closeModal('modalResetPassword')">Cancelar</button>
+        <button class="btn-primary" onclick="confirmarResetPassword()">Resetear Contraseña</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Ver Detalle Reporte -->
+  <div id="modalReporteDetail" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-container" style="max-width: 600px;">
+      <div class="modal-header">
+        <div class="modal-title-block">
+          <div class="modal-icon-wrap red"><i class="fas fa-exclamation-triangle"></i></div>
+          <div><h3>Detalle del Reporte</h3><p>Información completa del incidente</p></div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modalReporteDetail')">&times;</button>
+      </div>
+      <div class="modal-body" id="reporteDetailContent">
+        <!-- Contenido dinámico -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn-outline" onclick="closeModal('modalReporteDetail')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast para notificaciones -->
+  <div id="adminToast" class="toast"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

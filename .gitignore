@@ -1,0 +1,40 @@
+# Dependencias
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Archivos temporales
+temp/
+*.tmp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Build
+dist/
+build/
+
+# Docker
+docker-compose.override.yml
+
+# Tests output
+coverage/
+
+# Otros
+*.pid
+*.seed

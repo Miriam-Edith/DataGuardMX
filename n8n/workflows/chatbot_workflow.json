@@ -1,0 +1,378 @@
+{
+  "name": "DataGuardMX Chatbot PRO v2",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatbot",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "14cca13f-d2d2-4090-9edb-c9546b36d195",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [-4800, -624],
+      "webhookId": "chatbot"
+    },
+
+    {
+      "parameters": {
+        "jsCode": "function normalize(text) {\n  return text\n    .toLowerCase()\n    .normalize('NFD')\n    .replace(/[\\u0300-\\u036f]/g, '');\n}\n\nconst raw = $json.body?.message || '';\nconst mensaje = normalize(raw);\nconst userId = $json.body?.userId || null;\n\nconst intents = {\n  riesgo:  ['riesgo','alertas','seguridad','filtracion','hackeo'],\n  arco:    ['arco','datos','privacidad','acceso','rectificacion','cancelacion'],\n  reporte: ['reporte','denuncia','queja','incidente'],\n  ayuda:   ['ayuda','menu','opciones']\n};\n\nconst priority = ['riesgo','arco','reporte','ayuda'];\n\nfunction detectar(texto) {\n  for (const intent of priority) {\n    for (const palabra of intents[intent]) {\n      if (texto.includes(palabra)) return intent;\n    }\n  }\n  return 'gemini';\n}\n\nreturn [{ json: { mensaje, raw, userId, intent: detectar(mensaje) } }];"
+      },
+      "id": "2349ccea-de0b-4dc0-ab29-5f164f7a8776",
+      "name": "Clasificar Intención",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [-4560, -624]
+    },
+
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{!!$json.userId}}",
+              "operation": "equal",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "auth-check-node",
+      "name": "¿Autenticado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [-4304, -624]
+    },
+
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "reply",
+              "value": "🔐 Inicia sesión en DataGuardMX para acceder a esta función."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "df0d5614-c829-4968-b7e3-aa37577078e9",
+      "name": "No autenticado",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [-4304, -464]
+    },
+
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.intent}}",
+              "operation": "equals",
+              "value2": "riesgo"
+            }
+          ]
+        }
+      },
+      "id": "if-riesgo",
+      "name": "IF riesgo",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [-4064, -768]
+    },
+
+    {
+      "parameters": {
+        "url": "http://backend:3000/api/alertas/public/by-user",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "userId", "value": "={{$json.userId}}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2004a96f-c06c-4dc0-a181-3b559c8feab5",
+      "name": "Obtener Alertas",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [-3856, -848],
+      "continueOnFail": true
+    },
+
+    {
+      "parameters": {
+        "jsCode": "if ($json.error) {\n  return [{ json: { reply: '⚠️ Error al obtener alertas. Intenta más tarde.' } }];\n}\n\nconst lista = Array.isArray($json) ? $json : ($json.data || []);\nconst total = lista.length;\n\nlet nivel = 'BAJO';\nlet emoji = '🟢';\nif (total >= 3) { nivel = 'ALTO';  emoji = '🔴'; }\nelse if (total >= 1) { nivel = 'MEDIO'; emoji = '🟠'; }\n\nreturn [{ json: { reply: `${emoji} Nivel de riesgo: ${nivel}\\nTienes ${total} alertas. Revisa tu dashboard.` } }];"
+      },
+      "id": "1a96ee89-4da8-438d-962e-90d3d880aeb6",
+      "name": "Respuesta Riesgo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [-3664, -816]
+    },
+
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.intent}}",
+              "operation": "equals",
+              "value2": "arco"
+            }
+          ]
+        }
+      },
+      "id": "if-arco",
+      "name": "IF arco",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [-4064, -624]
+    },
+
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "reply",
+              "value": "Puedes ejercer tus derechos ARCO desde tu dashboard o escribiendo a privacidad@dataguardmx.com."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "af42f1bb-6607-4db8-8dab-7651d68a78ca",
+      "name": "Respuesta ARCO",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [-3856, -624]
+    },
+
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.intent}}",
+              "operation": "equals",
+              "value2": "reporte"
+            }
+          ]
+        }
+      },
+      "id": "if-reporte",
+      "name": "IF reporte",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [-4064, -480]
+    },
+
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "reply",
+              "value": "Puedes reportar incidentes desde la sección 'Mis reportes' en tu dashboard."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cf2e4d07-de81-41a5-a030-2faf7ca65a2c",
+      "name": "Respuesta Reporte",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [-3856, -480]
+    },
+
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.intent}}",
+              "operation": "equals",
+              "value2": "ayuda"
+            }
+          ]
+        }
+      },
+      "id": "if-ayuda",
+      "name": "IF ayuda",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [-4064, -336]
+    },
+
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "reply",
+              "value": "Puedo ayudarte con riesgo, derechos ARCO o reportes. ¿Qué necesitas?"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4be0114f-103f-4542-a903-dff307baadca",
+      "name": "Respuesta Ayuda",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [-3856, -336]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { chatInput: $json.raw, userId: $json.userId } }];"
+      },
+      "id": "ec3f3808-46ce-4fa5-86d1-dd8979d55d6d",
+      "name": "Prep Gemini",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [-4064, -192]
+    },
+
+    {
+      "parameters": {
+        "text": "={{$json.chatInput}}",
+        "options": {}
+      },
+      "id": "1ded4684-1ae9-490a-85f5-e36aa885b20a",
+      "name": "Gemini",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1,
+      "position": [-3808, -272]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { reply: $json.output || 'No pude responder.' } }];"
+      },
+      "id": "b8fa3fb5-2083-4057-af8e-ed5193bf91f6",
+      "name": "Format Gemini",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [-3472, -320]
+    },
+
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { reply: $json.reply } }}",
+        "options": {}
+      },
+      "id": "ac7bf610-23e2-4188-a5bd-f38b6127fe88",
+      "name": "Responder",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [-3312, -608]
+    },
+
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [-3952, -64],
+      "id": "8daff533-c10b-4dc1-907e-3c57eeedbf9f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "r0UjuJ4hpHchlkut",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Clasificar Intención", "type": "main", "index": 0 }]]
+    },
+    "Clasificar Intención": {
+      "main": [[{ "node": "¿Autenticado?", "type": "main", "index": 0 }]]
+    },
+    "¿Autenticado?": {
+      "main": [
+        [{ "node": "IF riesgo", "type": "main", "index": 0 }],
+        [{ "node": "No autenticado", "type": "main", "index": 0 }]
+      ]
+    },
+    "No autenticado": {
+      "main": [[{ "node": "Responder", "type": "main", "index": 0 }]]
+    },
+    "IF riesgo": {
+      "main": [
+        [{ "node": "Obtener Alertas", "type": "main", "index": 0 }],
+        [{ "node": "IF arco", "type": "main", "index": 0 }]
+      ]
+    },
+    "Obtener Alertas": {
+      "main": [[{ "node": "Respuesta Riesgo", "type": "main", "index": 0 }]]
+    },
+    "Respuesta Riesgo": {
+      "main": [[{ "node": "Responder", "type": "main", "index": 0 }]]
+    },
+    "IF arco": {
+      "main": [
+        [{ "node": "Respuesta ARCO", "type": "main", "index": 0 }],
+        [{ "node": "IF reporte", "type": "main", "index": 0 }]
+      ]
+    },
+    "Respuesta ARCO": {
+      "main": [[{ "node": "Responder", "type": "main", "index": 0 }]]
+    },
+    "IF reporte": {
+      "main": [
+        [{ "node": "Respuesta Reporte", "type": "main", "index": 0 }],
+        [{ "node": "IF ayuda", "type": "main", "index": 0 }]
+      ]
+    },
+    "Respuesta Reporte": {
+      "main": [[{ "node": "Responder", "type": "main", "index": 0 }]]
+    },
+    "IF ayuda": {
+      "main": [
+        [{ "node": "Respuesta Ayuda", "type": "main", "index": 0 }],
+        [{ "node": "Prep Gemini", "type": "main", "index": 0 }]
+      ]
+    },
+    "Respuesta Ayuda": {
+      "main": [[{ "node": "Responder", "type": "main", "index": 0 }]]
+    },
+    "Prep Gemini": {
+      "main": [[{ "node": "Gemini", "type": "main", "index": 0 }]]
+    },
+    "Gemini": {
+      "main": [[{ "node": "Format Gemini", "type": "main", "index": 0 }]]
+    },
+    "Format Gemini": {
+      "main": [[{ "node": "Responder", "type": "main", "index": 0 }]]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [[{ "node": "Gemini", "type": "ai_languageModel", "index": 0 }]]
+    }
+  },
+
+  "pinData": {},
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "dataguardmx-v2-if-chain",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f4dc370a1e7e9beed9f704ba52677861dc9ec93e139fe4d3e1fa60bd4ed2f19b"
+  },
+  "id": "QYxqpdKxBvuThR10gtdno",
+  "tags": []
+}

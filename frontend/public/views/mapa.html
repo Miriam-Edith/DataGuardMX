@@ -1,0 +1,96 @@
+<div class="section-title">
+  <i class="fas fa-map-marker-alt"></i> Mapa de Incidentes Reportados
+</div>
+
+<!-- Controles del mapa -->
+<div class="card" style="margin-bottom: 1rem; padding: 1rem;">
+  <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+    <div style="flex: 1;">
+      <input type="text" id="mapSearchInput" 
+             placeholder="Buscar ubicación en el mapa..." 
+             style="width: 100%; padding: 8px 12px; background: var(--deep); border: 1px solid var(--edge); border-radius: 8px; color: var(--bright);">
+    </div>
+    <div>
+      <button id="resetMapView" class="btn-outline btn-sm">
+        <i class="fas fa-location-arrow"></i> Centrar mapa
+      </button>
+    </div>
+    <div>
+      <button id="toggleMarkers" class="btn-outline btn-sm">
+        <i class="fas fa-layer-group"></i> Mostrar todos
+      </button>
+    </div>
+  </div>
+  
+  <!-- Filtros por tipo de incidente -->
+  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+    <button class="map-filter-chip active" data-type="all">Todos</button>
+    <button class="map-filter-chip" data-type="Filtración de datos">🔓 Filtración</button>
+    <button class="map-filter-chip" data-type="Acceso no autorizado">🚪 Acceso no autorizado</button>
+    <button class="map-filter-chip" data-type="Suplantación de identidad">🎭 Suplantación</button>
+    <button class="map-filter-chip" data-type="Pérdida de información">💾 Pérdida</button>
+  </div>
+</div>
+
+<!-- Mapa -->
+<div id="map" style="height: 450px; border-radius: 12px; margin-bottom: 1rem;"></div>
+
+<!-- Leyenda -->
+<div class="card" style="margin-bottom: 1rem; padding: 0.75rem;">
+  <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+    <span><span style="display: inline-block; width: 12px; height: 12px; background: #ff4757; border-radius: 50%; margin-right: 5px;"></span> Filtración de datos</span>
+    <span><span style="display: inline-block; width: 12px; height: 12px; background: #f5a623; border-radius: 50%; margin-right: 5px;"></span> Acceso no autorizado</span>
+    <span><span style="display: inline-block; width: 12px; height: 12px; background: #f0a500; border-radius: 50%; margin-right: 5px;"></span> Pérdida de información</span>
+    <span><span style="display: inline-block; width: 12px; height: 12px; background: #e74c3c; border-radius: 50%; margin-right: 5px;"></span> Suplantación de identidad</span>
+    <span><span style="display: inline-block; width: 12px; height: 12px; background: #00e5c3; border-radius: 50%; margin-right: 5px;"></span> Otros</span>
+  </div>
+</div>
+
+<!-- Lista de ubicaciones -->
+<div class="card" style="padding: 0; overflow: hidden;">
+  <div style="background: var(--deep); padding: 0.75rem 1rem; border-bottom: 1px solid var(--edge);">
+    <strong><i class="fas fa-list"></i> Incidentes por ubicación</strong>
+    <span id="incidentesCount" style="float: right; color: var(--cyan);">0 incidentes</span>
+  </div>
+  <div id="incidentesList" style="max-height: 300px; overflow-y: auto;"></div>
+</div>
+
+<style>
+  .map-filter-chip {
+    background: var(--deep);
+    border: 1px solid var(--edge);
+    color: var(--text2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .map-filter-chip:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  
+  .map-filter-chip.active {
+    background: var(--cyan);
+    color: var(--ink);
+    border-color: var(--cyan);
+  }
+  
+  .custom-marker {
+    background: transparent;
+    border: none;
+  }
+  
+  .marker-pulse {
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+  }
+</style>
+
+<script src="js/views/mapa.js" type="module"></script>

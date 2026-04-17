@@ -1,0 +1,76 @@
+services:
+  # ============================================
+  # BACKEND - API REST (DataGuardMX)
+  # ============================================
+  backend:
+    build: ./backend
+    container_name: dataguardmx_backend
+    environment:
+      # Servidor
+      PORT: 3001
+      NODE_ENV: ${NODE_ENV:-development}
+      BACKEND_URL: ${BACKEND_URL:-http://localhost:3001}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8081}
+      
+      # Supabase
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      
+      # JWT
+      JWT_SECRET: ${JWT_SECRET}
+      
+      # n8n - USA TU N8N EXISTENTE EN PUERTO 5678
+      N8N_WEBHOOK_URL: ${N8N_WEBHOOK_URL:-http://localhost:5678/webhook}
+      
+      # Mailtrap
+      MAILTRAP_API_TOKEN: ${MAILTRAP_API_TOKEN}
+      SMTP_FROM: ${SMTP_FROM:-noreply@dataguardmx.com}
+      
+      # BreachDirectory (RapidAPI - GRATIS)
+      RAPIDAPI_KEY: ${RAPIDAPI_KEY}
+      RAPIDAPI_HOST: ${RAPIDAPI_HOST}
+      
+      # HIBP
+      HIBP_ENABLED: ${HIBP_ENABLED:-false}
+      HIBP_API_KEY: ${HIBP_API_KEY:-}
+      
+      # Feature Flags
+      FEATURE_EMAIL_NOTIFICATIONS: ${FEATURE_EMAIL_NOTIFICATIONS:-true}
+      FEATURE_BREACH_CHECK: ${FEATURE_BREACH_CHECK:-true}
+      FEATURE_PDF_EXPORT: ${FEATURE_PDF_EXPORT:-true}
+      FEATURE_CHATBOT: ${FEATURE_CHATBOT:-true}
+      FEATURE_2FA: ${FEATURE_2FA:-false}
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend/temp:/app/temp
+      - ./backend/storage:/app/storage
+    networks:
+      - dataguardmx_net
+    restart: unless-stopped
+
+  # ============================================
+  # FRONTEND - DataGuardMX (Puerto 8081)
+  # ============================================
+  frontend:
+    build: ./frontend
+    container_name: dataguardmx_frontend
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+    networks:
+      - dataguardmx_net
+    restart: unless-stopped
+
+  # ============================================
+  # N8N - ELIMINADO (Usas tu n8n existente)
+  # ============================================
+  # NO NECESITAS ESTE SERVICIO - Ya tienes n8n corriendo
+
+volumes:
+  n8n_data:  # Puedes eliminar esto también
+
+networks:
+  dataguardmx_net:
+    driver: bridge

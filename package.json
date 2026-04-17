@@ -1,0 +1,46 @@
+{
+  "name": "dataguardmx",
+  "version": "1.0.0",
+  "description": "Plataforma SaaS de protección de identidad digital enfocada en México",
+  "main": "server.js",
+  "author": "Eduardo Ochoa",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "start:prod": "NODE_ENV=production node server.js",
+    "lint": "echo \"(opcional) agrega eslint aqui\"",
+    "test": "node test-breach.js && node test-email.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "axios": "^1.6.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "node-cache": "^5.1.2",
+    "nodemailer": "^6.9.7",
+    "pdfkit": "^0.14.0",
+    "qrcode": "^1.5.3",
+    "speakeasy": "^2.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "cybersecurity",
+    "privacy",
+    "saas",
+    "mexico",
+    "supabase",
+    "n8n",
+    "express"
+  ]
+}

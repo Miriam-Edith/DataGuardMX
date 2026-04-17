@@ -1,0 +1,270 @@
+<div class="section-title">
+  <i class="fas fa-search"></i> Buscador de Incidentes
+</div>
+
+<!-- Búsqueda en tiempo real estilo Google -->
+<div class="card" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" id="searchInput" 
+             placeholder="Buscar incidentes, ubicaciones, tipos... 
+Ejemplo: filtración, INE, Banco, SAT..."
+             autocomplete="off"
+             style="width: 100%; padding: 14px 20px 14px 45px; 
+                    background: var(--deep); border: 1px solid var(--edge); 
+                    border-radius: 50px; color: var(--bright); font-size: 1rem;">
+      <button id="clearSearch" class="clear-search" style="display: none;">
+        <i class="fas fa-times-circle"></i>
+      </button>
+    </div>
+    
+    <!-- Sugerencias en tiempo real -->
+    <div id="searchSuggestions" class="search-suggestions" style="display: none;"></div>
+  </div>
+  
+  <!-- Filtros rápidos -->
+  <div class="quick-filters" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+    <button class="filter-chip active" data-filter="all">Todos</button>
+    <button class="filter-chip" data-filter="Filtración de datos">🔓 Filtración</button>
+    <button class="filter-chip" data-filter="Acceso no autorizado">🚪 Acceso no autorizado</button>
+    <button class="filter-chip" data-filter="Suplantación de identidad">🎭 Suplantación</button>
+    <button class="filter-chip" data-filter="Pérdida de información">💾 Pérdida</button>
+  </div>
+</div>
+
+<!-- Resultados -->
+<div id="searchResults"></div>
+
+<!-- Estado de carga -->
+<div id="searchStatus" style="text-align: center; padding: 2rem; color: var(--muted);"></div>
+
+<style>
+  .search-container {
+    position: relative;
+  }
+  
+  .search-input-wrapper {
+    position: relative;
+  }
+  
+  .search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    z-index: 1;
+  }
+  
+  .clear-search {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1rem;
+    z-index: 1;
+  }
+  
+  .clear-search:hover {
+    color: var(--red);
+  }
+  
+  .search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: 12px;
+    margin-top: 8px;
+    z-index: 100;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  
+  .suggestion-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--edge);
+    transition: background 0.2s;
+  }
+  
+  .suggestion-item:hover {
+    background: var(--deep);
+  }
+  
+  .suggestion-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(0,229,195,0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cyan);
+  }
+  
+  .suggestion-content {
+    flex: 1;
+  }
+  
+  .suggestion-title {
+    font-weight: 600;
+    color: var(--bright);
+  }
+  
+  .suggestion-subtitle {
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+  
+  .suggestion-type {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: rgba(0,229,195,0.1);
+    color: var(--cyan);
+  }
+  
+  .filter-chip {
+    background: var(--deep);
+    border: 1px solid var(--edge);
+    color: var(--text2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .filter-chip:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  
+  .filter-chip.active {
+    background: var(--cyan);
+    color: var(--ink);
+    border-color: var(--cyan);
+  }
+  
+  .result-card {
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  
+  .result-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--cyan);
+    box-shadow: 0 4px 12px rgba(0,229,195,0.1);
+  }
+  
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .result-type {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(0,229,195,0.1);
+    color: var(--cyan);
+  }
+  
+  .result-date {
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+  
+  .result-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--bright);
+    margin-bottom: 0.5rem;
+  }
+  
+  .result-title mark {
+    background: rgba(0,229,195,0.3);
+    color: var(--cyan);
+    padding: 0 2px;
+    border-radius: 3px;
+  }
+  
+  .result-description {
+    font-size: 0.85rem;
+    color: var(--text2);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+  
+  .result-description mark {
+    background: rgba(0,229,195,0.3);
+    color: var(--cyan);
+    padding: 0 2px;
+    border-radius: 3px;
+  }
+  
+  .result-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.7rem;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  
+  .result-meta i {
+    width: 16px;
+    margin-right: 4px;
+  }
+  
+  .highlight {
+    background: rgba(0,229,195,0.2);
+    color: var(--cyan);
+    font-weight: bold;
+  }
+  
+  .no-results {
+    text-align: center;
+    padding: 3rem;
+    color: var(--muted);
+  }
+  
+  .loading-spinner {
+    text-align: center;
+    padding: 2rem;
+  }
+  
+  .loading-spinner i {
+    font-size: 2rem;
+    color: var(--cyan);
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+</style>
+
+<script src="js/views/buscador.js" type="module"></script>
