@@ -149,6 +149,50 @@
   </div>
 
   <!-- ============================================ -->
+  <!-- CHATBOT WIDGET                              -->
+  <!-- ============================================ -->
+  <div id="chatbotWidget">
+    <button id="chatbotToggle" aria-label="Abrir chat">
+      <i class="fas fa-comment-dots"></i>
+    </button>
+    <div id="chatbotWindow">
+      <div class="chat-header">
+        <span><i class="fas fa-robot" style="margin-right: 0.5rem;"></i>Guardia · Asistente IA</span>
+        <button id="chatbotClose" aria-label="Cerrar chat">&times;</button>
+      </div>
+      <!-- Contenedor de respuestas rápidas -->
+      <div class="quick-replies-container">
+        <div class="quick-replies-title">
+          <i class="fas fa-bolt"></i> Preguntas rápidas
+        </div>
+        <div class="quick-replies" id="quickReplies">
+          <button class="quick-reply-btn" data-action="riesgo">
+            <i class="fas fa-chart-line"></i> Mi nivel de riesgo
+          </button>
+          <button class="quick-reply-btn" data-action="arco">
+            <i class="fas fa-shield"></i> Derechos ARCO
+          </button>
+          <button class="quick-reply-btn" data-action="reporte">
+            <i class="fas fa-exclamation-triangle"></i> Reportar incidente
+          </button>
+          <button class="quick-reply-btn" data-action="info">
+            <i class="fas fa-info-circle"></i> Sobre DataGuard
+          </button>
+        </div>
+      </div>
+      <div id="chatMessages">
+        <div class="msg bot">
+          ¡Hola! 👋 Soy <strong>Guardia</strong>, tu asistente de privacidad.
+        </div>
+      </div>
+      <div class="chat-input-bar">
+        <input type="text" id="chatInput" placeholder="Escribe tu consulta..." aria-label="Mensaje">
+        <button id="chatSend" aria-label="Enviar mensaje">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
   <!-- MODALES                                     -->
   <!-- ============================================ -->
 
