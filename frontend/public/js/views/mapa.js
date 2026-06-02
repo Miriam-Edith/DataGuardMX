@@ -1,9 +1,11 @@
 // ============================================
 // MAPA CON TODOS LOS REPORTES DE TODOS LOS USUARIOS
+// CLUSTERING DE INCIDENTES ACTIVO
 // ============================================
 
 let map = null;
 let markers = [];
+let markerClusterGroup = null;
 let isInitializing = false;
 let currentFilter = 'all';
 let allIncidentes = [];
@@ -16,17 +18,26 @@ async function initMapa() {
   
   if (map) {
     console.log('🗺️ Limpiando marcadores existentes...');
-    markers.forEach(marker => map.removeLayer(marker));
+    if (markerClusterGroup) {
+      map.removeLayer(markerClusterGroup);
+    }
+    markerClusterGroup = null;
     markers = [];
     await cargarIncidentesMapa();
     return;
   }
   
   isInitializing = true;
-  console.log('🗺️ Inicializando mapa...');
+  console.log('🗺️ Inicializando mapa con clustering...');
   
   if (typeof L === 'undefined') {
     console.log('⏳ Esperando Leaflet...');
+    setTimeout(() => { isInitializing = false; initMapa(); }, 500);
+    return;
+  }
+  
+  if (typeof L.markerClusterGroup === 'undefined') {
+    console.log('⏳ Esperando Leaflet MarkerCluster...');
     setTimeout(() => { isInitializing = false; initMapa(); }, 500);
     return;
   }
@@ -48,7 +59,19 @@ async function initMapa() {
       minZoom: 4
     }).addTo(map);
     
-    console.log('✅ Mapa creado');
+    // Crear grupo de clustering
+    markerClusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 80,
+      disableClusteringAtZoom: 15,
+      spiderfyOnMaxZoom: true,
+      chunkedLoading: true,
+      chunkInterval: 200,
+      chunkDelay: 50
+    });
+    
+    map.addLayer(markerClusterGroup);
+    
+    console.log('✅ Mapa creado con clustering activo');
     await cargarIncidentesMapa();
     setupMapControls();
     
@@ -141,10 +164,10 @@ async function cargarIncidentesMapa() {
 }
 
 function agregarMarcadores(incidentes) {
-  if (!map) return;
+  if (!map || !markerClusterGroup) return;
   
   // Limpiar marcadores existentes
-  markers.forEach(marker => map.removeLayer(marker));
+  markerClusterGroup.clearLayers();
   markers = [];
   
   const bounds = L.latLngBounds([]);
@@ -185,7 +208,8 @@ function agregarMarcadores(incidentes) {
       </div>
     `);
     
-    marker.addTo(map);
+    // Agregar marcador al cluster
+    markerClusterGroup.addLayer(marker);
     markers.push(marker);
     bounds.extend([lat, lng]);
   });
@@ -194,7 +218,7 @@ function agregarMarcadores(incidentes) {
     map.fitBounds(bounds, { padding: [50, 50], maxZoom: 10 });
   }
   
-  console.log(`✅ Agregados ${markers.length} marcadores al mapa`);
+  console.log(`✅ Agregados ${markers.length} marcadores al cluster`);
 }
 
 function mostrarListaIncidentes(incidentes) {

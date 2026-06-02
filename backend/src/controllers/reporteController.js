@@ -67,3 +67,11 @@ exports.getReportesCountByUserId = async (req, res) => {
     res.status(500).json({ message: 'Error al obtener conteo de reportes' });
   }
 };
+
+// Obtener reportes por userId (para chatbot)
+exports.getReportesByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    // Verificar permisos (solo admin o el propio usuario)
+
+    
